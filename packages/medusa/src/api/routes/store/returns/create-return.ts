@@ -169,7 +169,7 @@ export default async (req, res) => {
               .workStage(
                 idempotencyKey.idempotency_key,
                 async (manager) => {
-                  let ret = await returnService.withTransaction(manager).list(
+                  const returnOrders = await returnService.withTransaction(manager).list(
                     {
                       idempotency_key: idempotencyKey.idempotency_key,
                     },
@@ -177,13 +177,13 @@ export default async (req, res) => {
                       relations: ["items", "items.reason"],
                     }
                   )
-                  if (!ret.length) {
+                  if (!returnOrders.length) {
                     throw new MedusaError(
                       MedusaError.Types.INVALID_DATA,
                       `Return not found`
                     )
                   }
-                  ret = ret[0]
+                  const returnOrder = returnOrders[0]
 
                   return {
                     response_code: 200,

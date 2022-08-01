@@ -193,22 +193,24 @@ export default async (req, res) => {
                * and register it as received.
                */
               if (value.receive_now) {
-                let ret = await returnService.withTransaction(manager).list({
-                  idempotency_key: idempotencyKey.idempotency_key,
-                })
+                const returnOrders = await returnService
+                  .withTransaction(manager)
+                  .list({
+                    idempotency_key: idempotencyKey.idempotency_key,
+                  })
 
-                if (!ret.length) {
+                if (!returnOrders.length) {
                   throw new MedusaError(
                     MedusaError.Types.INVALID_DATA,
                     `Return not found`
                   )
                 }
 
-                ret = ret[0]
+                const returnOrder = returnOrders[0]
 
                 order = await returnService
                   .withTransaction(manager)
-                  .receive(ret.id, value.items, value.refund)
+                  .receive(returnOrder.id, value.items, value.refund)
               }
 
               order = await orderService.withTransaction(manager).retrieve(id, {
@@ -262,7 +264,7 @@ export default async (req, res) => {
 }
 
 type ReturnObj = {
-  order_id?: string
+  order_id: string
   idempotency_key?: string
   items?: OrdersReturnItem[]
   shipping_method?: ReturnShipping
