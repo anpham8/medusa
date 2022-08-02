@@ -18,6 +18,8 @@ import { TaxProvider } from "./tax-provider"
 import { SoftDeletableEntity } from "../interfaces/models/soft-deletable-entity"
 import { DbAwareColumn } from "../utils/db-aware-column"
 import { generateEntityId } from "../utils/generate-entity-id"
+import { FeatureFlagColumn } from "../utils/feature-flag-decorators";
+import TaxInclusiveFeatureFlag from "../loaders/feature-flags/tax-inclusive";
 
 @Entity()
 export class Region extends SoftDeletableEntity {
@@ -51,6 +53,9 @@ export class Region extends SoftDeletableEntity {
 
   @Column({ type: "text", nullable: true })
   tax_provider_id: string | null
+
+  @FeatureFlagColumn(TaxInclusiveFeatureFlag.key, { default: false })
+  includes_tax: boolean
 
   @ManyToOne(() => TaxProvider)
   @JoinColumn({ name: "tax_provider_id" })
@@ -150,4 +155,7 @@ export class Region extends SoftDeletableEntity {
  *   metadata:
  *     description: "An optional key-value map with additional information."
  *     type: object
+ * includes_tax:
+ *    description: "[EXPERIMENTAL] Does the currency includes tax"
+ *    type: boolean
  */

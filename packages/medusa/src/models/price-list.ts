@@ -12,6 +12,8 @@ import { CustomerGroup } from "./customer-group"
 import { MoneyAmount } from "./money-amount"
 import { SoftDeletableEntity } from "../interfaces/models/soft-deletable-entity"
 import { generateEntityId } from "../utils/generate-entity-id"
+import { FeatureFlagColumn } from "../utils/feature-flag-decorators";
+import TaxInclusiveFeatureFlag from "../loaders/feature-flags/tax-inclusive";
 
 @Entity()
 export class PriceList extends SoftDeletableEntity {
@@ -35,6 +37,9 @@ export class PriceList extends SoftDeletableEntity {
 
   @Column({ type: resolveDbType("timestamptz"), nullable: true })
   ends_at: Date | null
+
+  @FeatureFlagColumn(TaxInclusiveFeatureFlag.key, { default: false })
+  includes_tax: boolean
 
   @JoinTable({
     name: "price_list_customer_groups",
@@ -101,4 +106,7 @@ export class PriceList extends SoftDeletableEntity {
  *     description: "The date with timezone at which the resource was deleted."
  *     type: string
  *     format: date-time
+ * includes_tax:
+ *    description: "[EXPERIMENTAL] Does the currency includes tax"
+ *    type: boolean
  */
