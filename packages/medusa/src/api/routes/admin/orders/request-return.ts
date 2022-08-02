@@ -208,7 +208,7 @@ export default async (req, res) => {
 
                 const returnOrder = returnOrders[0]
 
-                order = await returnService
+                await returnService
                   .withTransaction(manager)
                   .receive(returnOrder.id, value.items, value.refund)
               }
